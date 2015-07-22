@@ -42,6 +42,7 @@ const controller = Controller(state, defaultArgs);
 
 React.render(controller.injectInto(AppComponent), document.body);
 ```
+With immutable-store you can also map state using functions, read more about that [here](https://github.com/christianalfoni/immutable-store#mapping-state).
 
 ### Create signals
 ```js
@@ -100,6 +101,8 @@ React.render(controller.injectInto(AppComponent), document.body);
 ```
 
 ### Using the controller in a component
+
+#### Decorator
 ```js
 import React from 'react';
 import {Decorator as State} from 'cerebral-react-immutable-store';
@@ -122,4 +125,58 @@ class App extends React.Component {
     );
   }
 }
-````
+```
+
+#### Higher Order Component
+```js
+import React from 'react';
+import {HOC} from 'cerebral-react-immutable-store';
+
+class App extends React.Component {
+  componentDidMount() {
+    this.props.signals.appMounted();
+  }
+  render() {
+    return (
+      <div>
+        {this.props.isLoading ? 'Loading...' : 'hello ' + this.props.user.name}
+        {this.props.error ? this.props.error : null}
+      </div>
+    );
+  }
+}
+
+App = HOC(App, {
+  isLoading: ['isLoading'],
+  user: ['user'],
+  error: ['error']  
+});
+```
+
+#### Mixin
+```js
+import React from 'react';
+import {Mixin} from 'cerebral-react-immutable-store';
+
+const App = React.createClass({
+  mixins: [Mixin],
+  getStatePaths() {
+    return {
+      isLoading: ['isLoading'],
+      user: ['user'],
+      error: ['error']  
+    };
+  },
+  componentDidMount() {
+    this.props.signals.appMounted();
+  },
+  render() {
+    return (
+      <div>
+        {this.state.isLoading ? 'Loading...' : 'hello ' + this.state.user.name}
+        {this.state.error ? this.state.error : null}
+      </div>
+    );
+  }
+});
+```
