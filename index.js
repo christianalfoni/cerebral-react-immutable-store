@@ -99,7 +99,7 @@ Factory.Mixin = {
       return;
     }
     var statePaths = this.getStatePaths();
-    var newState = Object.keys(statePaths).reduce((newState, key) => {
+    var newState = Object.keys(statePaths).reduce(function (newState, key) {
       newState[key] = Value(statePaths[key], state);
       return newState;
     }, {});
