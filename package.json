@@ -1,6 +1,6 @@
 {
   "name": "cerebral-react-immutable-store",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A Cerebral package for react and immutable store",
   "main": "index.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "react": "^0.13.3"
   },
   "dependencies": {
-    "cerebral": "^0.11.1"
+    "cerebral": "^0.11.2"
   },
   "devDependencies": {
     "node-libs-browser": "^0.5.2",
