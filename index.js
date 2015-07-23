@@ -92,10 +92,11 @@ Factory.Mixin = {
     this._update(this.context.controller.get([]));
   },
   componentWillUnmount: function () {
+    this._isUmounting = true;
     eventHub.removeListener('change', this._update);
   },
   _update: function (state) {
-    if (!this.getStatePaths) {
+    if (this._isUmounting || !this.getStatePaths) {
       return;
     }
     var statePaths = this.getStatePaths();
@@ -106,6 +107,7 @@ Factory.Mixin = {
     this.setState(newState);
   }
 };
+
 
 Factory.Decorator = function (paths) {
   return function (Component) {
