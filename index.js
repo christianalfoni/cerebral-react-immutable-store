@@ -92,7 +92,7 @@ Factory.Mixin = {
     this._update(this.context.controller.get([]));
   },
   componentWillUnmount: function () {
-    eventHub.off('change', this._update);
+    eventHub.removeListener('change', this._update);
   },
   _update: function (state) {
     if (!this.getStatePaths) {
