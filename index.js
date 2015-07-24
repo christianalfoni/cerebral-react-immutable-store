@@ -24,6 +24,9 @@ var Factory = function (state, defaultArgs) {
     onUpdate: function () {
       eventEmitter.emit('change', state);
     },
+    onRemember: function () {
+      eventEmitter.emit('remember', state);
+    },
     onGet: function (path) {
       return Value(path, state);
     },
@@ -91,11 +94,13 @@ Factory.Mixin = {
     this.signals = this.context.controller.signals;
     this.recorder = this.context.controller.recorder;
     this.context.controller.eventEmitter.on('change', this._update);
+    this.context.controller.eventEmitter.on('remember', this._update);
     this._update(this.context.controller.get([]));
   },
   componentWillUnmount: function () {
     this._isUmounting = true;
     this.context.controller.eventEmitter.removeListener('change', this._update);
+    this.context.controller.eventEmitter.removeListener('remember', this._update);
   },
   _update: function (state) {
     if (this._isUmounting || !this.getStatePaths) {
