@@ -180,3 +180,12 @@ const App = React.createClass({
   }
 });
 ```
+
+### Listening to changes
+```js
+const onChange = function (state) {
+  state // New state
+};
+controller.eventEmitter.on('change', onChange);
+controller.eventEmitter.removeListener('change', onChange);
+```

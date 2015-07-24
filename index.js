@@ -3,11 +3,11 @@ var React = require('react');
 var Store = require('immutable-store');
 var EventEmitter = require('events').EventEmitter;
 
-var eventHub = new EventEmitter();
 var Value = cerebral.Value;
 
 var Factory = function (state, defaultArgs) {
 
+  var eventEmitter = new EventEmitter();
   var initialState = Store(state);
 
   state = initialState;
@@ -19,10 +19,10 @@ var Factory = function (state, defaultArgs) {
     },
     onSeek: function (seek, isPlaying, currentRecording) {
       state = state.import(currentRecording.initialState);
-      eventHub.emit('change', state);
+      eventEmitter.emit('change', state);
     },
     onUpdate: function () {
-      eventHub.emit('change', state);
+      eventEmitter.emit('change', state);
     },
     onGet: function (path) {
       return Value(path, state);
@@ -77,6 +77,8 @@ var Factory = function (state, defaultArgs) {
     }));
   };
 
+  controller.eventEmitter = eventEmitter;
+
   return controller;
 
 };
@@ -88,12 +90,12 @@ Factory.Mixin = {
   componentWillMount: function () {
     this.signals = this.context.controller.signals;
     this.recorder = this.context.controller.recorder;
-    eventHub.on('change', this._update);
+    this.context.controller.eventEmitter.on('change', this._update);
     this._update(this.context.controller.get([]));
   },
   componentWillUnmount: function () {
     this._isUmounting = true;
-    eventHub.removeListener('change', this._update);
+    this.context.controller.eventEmitter.removeListener('change', this._update);
   },
   _update: function (state) {
     if (this._isUmounting || !this.getStatePaths) {
