@@ -124,7 +124,14 @@ Factory.Decorator = function (paths) {
         return paths || {};
       },
       render: function () {
-        return React.createElement(Component, this.state);
+        var state = this.state;
+        var props = Object.keys(state).reduce(function (props, key) {
+          props[key] = state[key];
+          return props;
+        }, {});
+        props.signals = this.signals;
+        props.recorder = this.recorder;
+        return React.createElement(Component, props);
       }
     });
   };
