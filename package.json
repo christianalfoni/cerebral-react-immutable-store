@@ -1,6 +1,6 @@
 {
   "name": "cerebral-react-immutable-store",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A Cerebral package for react and immutable store",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/christianalfoni/cerebral-react-immutable-store",
   "peerDependencies": {
-    "immutable-store": "^0.5.1",
+    "immutable-store": "^0.5.2",
     "react": "^0.13.3"
   },
   "dependencies": {
