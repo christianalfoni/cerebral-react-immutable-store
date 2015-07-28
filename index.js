@@ -112,6 +112,16 @@ Factory.Mixin = {
       return newState;
     }, {});
     this.setState(newState);
+  },
+  _getControllerProps : function(){
+    var state = this.state;
+    var props = Object.keys(state).reduce(function (props, key) {
+      props[key] = state[key];
+      return props;
+    }, {});
+    props.signals = this.signals;
+    props.recorder = this.recorder;
+    return props;
   }
 };
 
@@ -124,13 +134,7 @@ Factory.Decorator = function (paths) {
         return paths || {};
       },
       render: function () {
-        var state = this.state;
-        var props = Object.keys(state).reduce(function (props, key) {
-          props[key] = state[key];
-          return props;
-        }, {});
-        props.signals = this.signals;
-        props.recorder = this.recorder;
+        var props = this._getControllerProps.apply(this);
         return React.createElement(Component, props);
       }
     });
@@ -144,13 +148,7 @@ Factory.HOC = function (Component, paths) {
       return paths || {};
     },
     render: function () {
-      var state = this.state;
-      var props = Object.keys(state).reduce(function (props, key) {
-        props[key] = state[key];
-        return props;
-      }, {});
-      props.signals = this.signals;
-      props.recorder = this.recorder;
+      var props = this._getControllerProps.apply(this);
       return React.createElement(Component, props);
     }
   });
