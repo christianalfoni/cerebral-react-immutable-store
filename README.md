@@ -10,6 +10,9 @@ You can download the Chrome debugger [here](https://chrome.google.com/webstore/d
 ## More info on Cerebral and video introduction
 Cerebral main repo is located [here](https://github.com/christianalfoni/cerebral) and a video demonstration can be bound [here](https://www.youtube.com/watch?v=xCIv4-Q2dtA).
 
+## Video introduction
+Watch a [video](https://www.youtube.com/watch?v=QG181MnRIXM) on how you can use this package.
+
 ## Install
 `npm install cerebral-react-immutable-store`
 
