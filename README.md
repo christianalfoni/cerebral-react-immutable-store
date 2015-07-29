@@ -120,6 +120,7 @@ export default function someAction (args, state) {
 ```
 
 ### Async actions
+Async actions are not able to mutate state, so the **state** argument only has the `get()` method. You have to **resolve** or **reject** any values to the next action to do mutations.
 *actions/someAction.js*
 ```js
 export default function someAction (args, state, promise) {
