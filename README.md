@@ -17,9 +17,8 @@ Cerebral main repo is located [here](https://github.com/christianalfoni/cerebral
 All examples are shown with ES6 syntax.
 
 ### Instantiate a Cerebral controller
+*controller.js*
 ```js
-import React from 'react';
-import AppComponent from './AppComponent.js';
 import Controller from 'cerebral-react-immutable-store';
 import request from 'superagent';
 
@@ -38,76 +37,126 @@ const defaultArgs = {
 };
 
 // Instantiate the controller
-const controller = Controller(state, defaultArgs);
+export default Controller(state, defaultArgs);
+```
+
+*main.js*
+```js
+import React from 'react';
+import AppComponent from './AppComponent.js';
+import controller from './controller.js';
 
 React.render(controller.injectInto(AppComponent), document.body);
 ```
 With immutable-store you can also map state using functions, read more about that [here](https://github.com/christianalfoni/immutable-store#mapping-state).
 
-### Create signals
+### Create signals and actions
+Actions is where it all happens. This is where you define mutations to your application state based on information sent from the VIEW layer. Actions are pure functions that can run synchronously and asynchronously. They are easily reused across signals and can easily be tested.
+
+*actions.js*
 ```js
-const controller = Controller(state, defaultArgs);
+export default {
+  // Define an action with a function. It receives two arguments when run
+  // synchronously
+  setLoading(args, state) {
+    state.set('isLoading', true);
+  },
 
-// We create an action
-const setLoading = function (args, state) {
-  state.set('isLoading', true);
+  // There are many types of mutations you can do, "set" is just one of them
+  unsetLoading(args, state) {
+    state.set('isLoading', false);
+  },
+
+  // When an action is run asynchronously it receives a third argument,
+  // a promise you can either resolve or reject. In this example we
+  // are using an ajax util we passed as a default argument and an argument
+  // we passed when the signal was triggered
+  saveForm(args, state, promise) {
+    args.utils.ajax.post('/form', args.formData, function (err, response) {
+      promise.resolve();
+    });
+  };  
 };
+```
 
-// This action has a third promise argument because it will be
-// run async in the signal. We either reject or resolve, which
-// will lead our signal into two different paths
-const getUser = function (args, state, promise) {
-  args.utils.request('/user', function (err, response) {
-    if (err) {
-      promise.reject({
-        error: err
-      });
-    } else {
-      promise.resolve({
-        user: JSON.parse(response)
-      });
-    }
-  });
-};
+*controller.js*
+```js
+...
+// The saveForm action runs async because it is in an array. You can have multiple
+// actions in one array that runs async in parallel.
+controller.signal('formSubmitted', setLoading, [saveForm], unsetLoading);
 
-// Since our previous action resolved with a user property this will now
-// be available as an argument
-const setUser = function (args, state) {
-  state.set('user', args.user);
-};
+export default controller
+```
 
-// If the promise was rejected, this will run
-const setError = function (args, state) {
-  state.set('error', args.error);
-};
+### Mutations
+You can do any traditional mutation to the state, the signature is just a bit different. You call the kind of mutation first, then the path and then an optional value. The path can either be a string or an array for nested paths. Depending on the size of your application you might consider putting each action in its own file.
 
-const unsetLoading = function (args, state) {
+*actions/someAction.js*
+```js
+export default function someAction (args, state) {
   state.set('isLoading', false);
-};
+  state.unset('isLoading');
+  state.merge('user', {name: 'foo'});
+  state.push('list', 'foo');
+  state.unshift('list', 'bar');
+  state.pop('list');
+  state.shift('list');
+  state.concat('list', [1, 2, 3]);
+  state.splice('list', 1, 1, [1]);
 
-// And now we define the signal. An application has many signals with many actions and
-// all actions can be used across different signals. This composability makes you very
-// productive. All actions are also pure, making them very easy to test
-controller.signal('appMounted',
+  // Use an array as path to reach nested values
+  state.push(['admin', 'users'], {foo: 'bar'});
+
+};
+```
+
+### Get state in actions
+*actions/someAction.js*
+```js
+export default function someAction (args, state) {
+  const isLoading = state.get('isLoading');
+};
+```
+
+### Async actions
+*actions/someAction.js*
+```js
+export default function someAction (args, state, promise) {
+  args.utils.ajax('/foo', function (err, result) {
+    if (err) {
+      promise.reject({error: err});
+    } else {
+      promise.resolve({result: result});
+    }
+  })
+};
+```
+You can optionally redirect resolved and rejected async actions to different actions by inserting an object as the last entry in the async array definition.
+
+*controller.js*
+```js
+...
+controller.signal('formSubmitted',
   setLoading,
-  [getUser, {
-    success: [setUser],
-    reject: [setError]
+  [saveForm, {
+    resolve: [closeModal],
+    reject: [setFormError]
   }],
   unsetLoading
 );
 
-React.render(controller.injectInto(AppComponent), document.body);
+export default Controller(state, defaultArgs);
 ```
 
-### Using the controller in a component
+### Get state in components
 
 #### Decorator
 ```js
 import React from 'react';
-import {Decorator as State} from 'cerebral-react-immutable-store';
+import {Decorator as Cerebral} from 'cerebral-react-immutable-store';
 
-@State({
+@Cerebral({
   isLoading: ['isLoading'],
   user: ['user'],
   error: ['error']  
@@ -181,8 +230,40 @@ const App = React.createClass({
 });
 ```
 
-### Listening to changes
+### Recording
 ```js
+import React from 'react';
+import {Decorator as Cerebral} from 'cerebral-react-immutable-store';
+
+@Cerebral()
+class App extends React.Component {
+  record() {
+    this.props.recorder.record();
+  }
+  record() {
+    this.props.recorder.stop();
+  }
+  play() {
+    this.props.recorder.seek(0, true);
+  }
+  render() {
+    return (
+      <div>
+        <button onClick={() => this.record()}>Record</button>
+        <button onClick={() => this.stop()}>Stop</button>
+        <button onClick={() => this.play()}>Play</button>
+      </div>
+    );
+  }
+}
+```
+
+### Listening to changes
+You can manually listen to changes on the controller, in case you want to explore [reactive-router](https://github.com/christianalfoni/reactive-router) for example.
+
+*main.js*
+```js
+...
 const onChange = function (state) {
   state // New state
 };

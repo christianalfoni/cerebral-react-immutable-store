@@ -17,6 +17,9 @@ var Factory = function (state, defaultArgs) {
     onReset: function () {
       state = initialState;
     },
+    onGetRecordingState: function () {
+      return state.export();
+    },
     onSeek: function (seek, isPlaying, currentRecording) {
       state = state.import(currentRecording.initialState);
       eventEmitter.emit('change', state);
@@ -112,16 +115,6 @@ Factory.Mixin = {
       return newState;
     }, {});
     this.setState(newState);
-  },
-  _getControllerProps : function(){
-    var state = this.state;
-    var props = Object.keys(state).reduce(function (props, key) {
-      props[key] = state[key];
-      return props;
-    }, {});
-    props.signals = this.signals;
-    props.recorder = this.recorder;
-    return props;
   }
 };
 
@@ -134,7 +127,13 @@ Factory.Decorator = function (paths) {
         return paths || {};
       },
       render: function () {
-        var props = this._getControllerProps.apply(this);
+        var state = this.state;
+        var props = Object.keys(state).reduce(function (props, key) {
+          props[key] = state[key];
+          return props;
+        }, {});
+        props.signals = this.signals;
+        props.recorder = this.recorder;
         return React.createElement(Component, props);
       }
     });
@@ -148,7 +147,13 @@ Factory.HOC = function (Component, paths) {
       return paths || {};
     },
     render: function () {
-      var props = this._getControllerProps.apply(this);
+      var state = this.state;
+      var props = Object.keys(state).reduce(function (props, key) {
+        props[key] = state[key];
+        return props;
+      }, {});
+      props.signals = this.signals;
+      props.recorder = this.recorder;
       return React.createElement(Component, props);
     }
   });
