@@ -10,6 +10,9 @@ You can download the Chrome debugger [here](https://chrome.google.com/webstore/d
 ## More info on Cerebral and video introduction
 Cerebral main repo is located [here](https://github.com/christianalfoni/cerebral) and a video demonstration can be bound [here](https://www.youtube.com/watch?v=xCIv4-Q2dtA).
 
+## Video introduction
+Watch a [video](https://www.youtube.com/watch?v=QG181MnRIXM) on how you can use this package.
+
 ## Install
 `npm install cerebral-react-immutable-store`
 
@@ -52,6 +55,8 @@ With immutable-store you can also map state using functions, read more about tha
 
 ### Create signals and actions
 Actions is where it all happens. This is where you define mutations to your application state based on information sent from the VIEW layer. Actions are pure functions that can run synchronously and asynchronously. They are easily reused across signals and can easily be tested.
+
+In larger application you should consider putting each action in its own file.
 
 *actions.js*
 ```js
@@ -120,6 +125,7 @@ export default function someAction (args, state) {
 ```
 
 ### Async actions
+Async actions are not able to mutate state, so the **state** argument only has the `get()` method. You have to **resolve** or **reject** any values to the next action to do mutations.
 *actions/someAction.js*
 ```js
 export default function someAction (args, state, promise) {
