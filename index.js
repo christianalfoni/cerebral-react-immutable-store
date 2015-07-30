@@ -105,6 +105,16 @@ Factory.Mixin = {
     this.context.controller.eventEmitter.removeListener('change', this._update);
     this.context.controller.eventEmitter.removeListener('remember', this._update);
   },
+  shouldComponentUpdate: function (nextProps, nextState) {
+    var keys = Object.keys(nextState);
+    for (var x = 0; x < keys.length; x++) {
+      var key = keys[x];
+      if (this.state[key] !== nextState[key]) {
+        return true;
+      }
+    }
+    return false;
+  },
   _update: function (state) {
     if (this._isUmounting || !this.getStatePaths) {
       return;

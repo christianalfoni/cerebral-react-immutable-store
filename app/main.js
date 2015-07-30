@@ -4,15 +4,20 @@ import Controller from 'controller';
 const Decorator = Controller.Decorator;
 
 const controller = Controller({
-  list: ['foo']
+  list: ['foo'],
+  foo: 'bar'
 });
 
 controller.signal('test', function AddBar (args, state) {
   state.push('list', 'bar');
 });
 
+@Decorator({
+  foo: ['foo']
+})
 class App extends React.Component {
   render() {
+    console.log('Rendering app');
     return (
       <div>
         <h1>Hello world!</h1>
@@ -23,16 +28,14 @@ class App extends React.Component {
   }
 }
 
-App = Controller.HOC(App);
-
+@Decorator({
+  list: ['list']
+})
 class List extends React.Component {
   render() {
+    console.log('Rendering list');
     return <ul>{this.props.list.map((item, i) => <li key={i}>{item}</li>)}</ul>;
   }
 }
-
-List = Controller.HOC(List, {
-  list: ['list']
-});
 
 React.render(controller.injectInto(App), document.body);
