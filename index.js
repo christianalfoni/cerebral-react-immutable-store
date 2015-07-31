@@ -1,3 +1,6 @@
+/*
+  THIS IS THE CEREBRAL-REACT-IMMUTABLE-STORE CONTROLLER IMPLEMENTATION
+*/
 var cerebral = require('cerebral');
 var React = require('react');
 var Store = require('immutable-store');
@@ -96,6 +99,7 @@ Factory.Mixin = {
   componentWillMount: function () {
     this.signals = this.context.controller.signals;
     this.recorder = this.context.controller.recorder;
+    this.get = this.context.controller.get;
     this.context.controller.eventEmitter.on('change', this._update);
     this.context.controller.eventEmitter.on('remember', this._update);
     this._update(this.context.controller.get([]));
@@ -106,13 +110,25 @@ Factory.Mixin = {
     this.context.controller.eventEmitter.removeListener('remember', this._update);
   },
   shouldComponentUpdate: function (nextProps, nextState) {
-    var keys = Object.keys(nextState);
-    for (var x = 0; x < keys.length; x++) {
-      var key = keys[x];
+    var propKeys = Object.keys(nextProps);
+    var stateKeys = Object.keys(nextState);
+
+    // props
+    for (var x = 0; x < propKeys.length; x++) {
+      var key = propKeys[x];
+      if (this.props[key] !== nextProps[key]) {
+        return true;
+      }
+    }
+
+    // State
+    for (var x = 0; x < stateKeys.length; x++) {
+      var key = stateKeys[x];
       if (this.state[key] !== nextState[key]) {
         return true;
       }
     }
+
     return false;
   },
   _update: function (state) {
@@ -128,6 +144,28 @@ Factory.Mixin = {
   }
 };
 
+var Render = function (Component) {
+  return function () {
+    var state = this.state || {};
+    var props = this.props || {};
+
+    var propsToPass = Object.keys(state).reduce(function (props, key) {
+      props[key] = state[key];
+      return props;
+    }, {});
+
+    propsToPass = Object.keys(props).reduce(function (propsToPass, key) {
+      propsToPass[key] = props[key];
+      return propsToPass;
+    }, propsToPass);
+
+    propsToPass.signals = this.signals;
+    propsToPass.recorder = this.recorder;
+    propsToPass.get = this.get;
+
+    return React.createElement(Component, propsToPass);
+  };
+};
 
 Factory.Decorator = function (paths) {
   return function (Component) {
@@ -136,16 +174,7 @@ Factory.Decorator = function (paths) {
       getStatePaths: function () {
         return paths || {};
       },
-      render: function () {
-        var state = this.state;
-        var props = Object.keys(state).reduce(function (props, key) {
-          props[key] = state[key];
-          return props;
-        }, {});
-        props.signals = this.signals;
-        props.recorder = this.recorder;
-        return React.createElement(Component, props);
-      }
+      render: Render(Component)
     });
   };
 };
@@ -156,16 +185,7 @@ Factory.HOC = function (Component, paths) {
     getStatePaths: function () {
       return paths || {};
     },
-    render: function () {
-      var state = this.state;
-      var props = Object.keys(state).reduce(function (props, key) {
-        props[key] = state[key];
-        return props;
-      }, {});
-      props.signals = this.signals;
-      props.recorder = this.recorder;
-      return React.createElement(Component, props);
-    }
+    render: Render(Component)
   });
 };
 
