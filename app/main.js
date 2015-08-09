@@ -17,7 +17,6 @@ controller.signal('test', function AddBar (args, state) {
 })
 class App extends React.Component {
   render() {
-    console.log('Rendering app');
     return (
       <div>
         <h1>Hello world!</h1>
@@ -33,7 +32,6 @@ class App extends React.Component {
 })
 class List extends React.Component {
   render() {
-    console.log('Rendering list');
     return <ul>{this.props.list.map((item, i) => <li key={i}>{item}</li>)}</ul>;
   }
 }
