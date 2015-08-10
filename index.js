@@ -62,11 +62,11 @@ var Factory = function (state, defaultArgs) {
     onPop: function (path) {
       state = Value(path, state).pop();
     },
-    onShift: function (path, value) {
-      state = Value(path, state).shift(value);
+    onShift: function (path) {
+      state = Value(path, state).shift();
     },
-    onUnshift: function (path) {
-      state = Value(path, state).unshift();
+    onUnshift: function (path, value) {
+      state = Value(path, state).unshift(value);
     }
   });
 
