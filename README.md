@@ -32,15 +32,15 @@ const state = {
   error: null
 };
 
-// Any default arguments you want each action to receive
-const defaultArgs = {
+// Any default input you want each action to receive
+const defaultInput = {
   utils: {
     request: request
   }
 };
 
 // Instantiate the controller
-export default Controller(state, defaultArgs);
+export default Controller(state, defaultInput);
 ```
 
 *main.js*
