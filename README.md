@@ -8,7 +8,7 @@ It is required that you use a Webpack or Browserify setup. Read more at [The ult
 You can download the Chrome debugger [here](https://chrome.google.com/webstore/detail/cerebral-debugger/ddefoknoniaeoikpgneklcbjlipfedbb?hl=no).
 
 ## More info on Cerebral and video introduction
-Cerebral main repo is located [here](https://github.com/christianalfoni/cerebral) and a video demonstration can be bound [here](https://www.youtube.com/watch?v=xCIv4-Q2dtA).
+Cerebral main repo is located [here](https://github.com/christianalfoni/cerebral) and a video demonstration can be found [here](https://www.youtube.com/watch?v=xCIv4-Q2dtA).
 
 ## Video introduction
 Watch a [video](https://www.youtube.com/watch?v=QG181MnRIXM) on how you can use this package.
@@ -54,7 +54,7 @@ React.render(controller.injectInto(AppComponent), document.body);
 With immutable-store you can also map state using functions, read more about that [here](https://github.com/christianalfoni/immutable-store#mapping-state).
 
 ### Creating signals
-Creating actions are generic. It works the same way across all packages. Please read about actions at the [Cerebral Repo - Actions](https://github.com/christianalfoni/cerebral#how-to-get-started). You can also watch [a video on creating actions](https://www.youtube.com/watch?v=ylJG4vUx_Tc) to get an overview of how it works.
+Creating actions are generic. It works the same way across all packages. Please read about actions at the [Cerebral Repo - Actions](https://github.com/christianalfoni/cerebral#how-to-get-started). You can also watch [a video on signals](https://www.youtube.com/watch?v=zkeBjGdn7uM) to get an overview of how it works.
 
 Typically you would create your signals in the *main.js* file, but you can split them out as you see fit.
 
