@@ -37,6 +37,7 @@ var Factory = function (state, defaultArgs) {
       return Value(path, state);
     },
     onSet: function (path, value) {
+      path = path.slice();
       var key = path.pop();
       state = Value(path, state).set(key, value);
     },
